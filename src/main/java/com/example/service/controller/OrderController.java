@@ -1,7 +1,9 @@
 package com.example.service.controller;
 
+import com.example.service.entities.Order;
+import com.example.service.services.ConvertService;
 import com.example.service.services.OrderService;
-import com.example.service.entities.OrderDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,27 +16,25 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class OrderController {
     private final OrderService orderService;
+    private final ConvertService convertService;
 
     @Autowired
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, ConvertService convertService) {
         this.orderService = orderService;
+        this.convertService = convertService;
     }
 
 
     @GetMapping("")
-    ResponseEntity<String> getObject(@RequestBody OrderDTO orderDTO) {
-        log.info(orderDTO.toString());
-        return new ResponseEntity<>(orderService.findOrderList(orderDTO), HttpStatus.OK);
+    ResponseEntity<String> getObject(@RequestBody String json) throws JsonProcessingException {
+        Order order=convertService.JsonToOrder(json);
+        return new ResponseEntity<>(orderService.findOrderListByCustomer(order), HttpStatus.OK);
     }
 
     @PutMapping("")
-    ResponseEntity<String>  putObject(@RequestBody OrderDTO orderDTO) {
-        log.info(orderDTO.toString());
-        return new ResponseEntity<>(orderService.addOrder(orderDTO),HttpStatus.OK);
-
+    ResponseEntity<String>  putObject(@RequestBody String json) throws JsonProcessingException {
+        Order order= convertService.JsonToOrder(json);
+        return new ResponseEntity<>(orderService.save(order),HttpStatus.OK);
     }
-
-
-
 
 }

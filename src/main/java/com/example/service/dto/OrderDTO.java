@@ -1,4 +1,4 @@
-package com.example.service.entities;
+package com.example.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -27,4 +27,5 @@ public class OrderDTO {
         this.customer = customer;
         this.cost = cost;
     }
+    public OrderDTO() {    }
 }

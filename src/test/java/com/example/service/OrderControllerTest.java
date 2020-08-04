@@ -1,17 +1,18 @@
 package com.example.service;
 
 import com.example.service.entities.Order;
-import com.example.service.entities.OrderDTO;
+import com.example.service.dto.OrderDTO;
+import com.example.service.services.ConvertService;
 import com.example.service.services.OrderService;
-import org.junit.Before;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -24,9 +25,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 class OrderControllerTest {
@@ -37,11 +36,12 @@ class OrderControllerTest {
     @MockBean
     //@Autowired
     private OrderService orderService;
+    private ConvertService convertService;
 
 
-    @Before
-    public void setData() {
-        orderService.addOrder(new OrderDTO("user1", 23));
+    @BeforeEach
+    public void setData() throws JsonProcessingException {
+        orderService.save(new Order ("user1", 23));
     }
 
 //    @Test
@@ -70,15 +70,15 @@ class OrderControllerTest {
 //                //.andExpect(jsonPath("$",hasSize(3)));
 //    }
     @Test
-    void getObject() throws Exception {
+    void getJsonTest() throws Exception {
         List<Order> orderList = new ArrayList<>();
         orderList.add(new Order("user1", 23));
-
-        BDDMockito.given(orderService.findByCustomer(orderList.get(0).getCustomer())).willReturn(orderList);
+        BDDMockito.given(orderService.findOrderListByCustomer(orderList.get(0))).willReturn(convertService.OrderListToJSON(orderList));
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/sb/service")
                 .content("{\"customer\": \"user1\",\"cost\": \"23\"}"))
+
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }

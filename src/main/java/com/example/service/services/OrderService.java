@@ -1,11 +1,9 @@
 package com.example.service.services;
 
-import com.example.service.converter.DTOConvert;
 import com.example.service.entities.Order;
-import com.example.service.entities.OrderDTO;
 import com.example.service.exception.CustomerNotFoundException;
 import com.example.service.repository.OrderRepository;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,34 +11,26 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@NoArgsConstructor
-@Slf4j
 public class OrderService {
     private OrderRepository orderRepository;
-    private DTOConvert dtoConvert;
+    private ConvertService convertService;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, DTOConvert dtoConvert) {
+    public OrderService(OrderRepository orderRepository, ConvertService convertService) {
         this.orderRepository = orderRepository;
-        this.dtoConvert = dtoConvert;
+        this.convertService = convertService;
     }
 
-    public String findOrderList (OrderDTO orderDTO) {
-        String customer=orderDTO.getCustomer();
-        List<Order> orderList=findByCustomer(customer);
-        return dtoConvert.OrderListToJson(orderList);
-    }
-    public List<Order> findByCustomer(String customer){
-        return orderRepository.findByCustomer(customer).orElseThrow(()->new CustomerNotFoundException(customer));
+    //find OrderList => Convert OrderList to Json
+    public String findOrderListByCustomer(Order order) throws JsonProcessingException {
+        List<Order> orderList=orderRepository.findByCustomer(order.getCustomer()).orElseThrow(()->new CustomerNotFoundException(order.getCustomer()));
+        return convertService.OrderListToJSON(orderList);
     }
 
-    public String addOrder(OrderDTO orderDTO) {
-        Order order=orderRepository.save(DTOConvert.DTOToOrder(orderDTO));
-        return dtoConvert.OrderToJson(order);
-    }
-
-    public Order save(Order order){
-        return orderRepository.save(order);
+    //save Order = Convert savedOrder to Json
+    public String save(Order order) throws JsonProcessingException {
+        Order savedOrder=orderRepository.save(order);
+        return convertService.OrderToJSON(savedOrder);
     }
 
 }
