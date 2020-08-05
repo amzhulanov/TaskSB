@@ -27,5 +27,7 @@ public class OrderDTO {
         this.customer = customer;
         this.cost = cost;
     }
-    public OrderDTO() {    }
+
+    public OrderDTO() {
+    }
 }

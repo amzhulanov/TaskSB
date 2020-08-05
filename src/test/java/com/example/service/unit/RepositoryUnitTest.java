@@ -1,7 +1,6 @@
 package com.example.service.unit;
 
 import com.example.service.entities.Order;
-import com.example.service.dto.OrderDTO;
 import com.example.service.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,20 +23,20 @@ public class RepositoryUnitTest {
     private OrderRepository orderRepository;
 
     @BeforeEach
-    void setData(){
-        order=new Order("user2",2);
+    void setData() {
+        order = new Order("user2", 2);
     }
 
     @Test
-    void saveOrderTest(){
-        Order savedOrder=orderRepository.save(order);
+    void saveOrderTest() {
+        Order savedOrder = orderRepository.save(order);
         assertThat(savedOrder.getCustomer()).isNotNull();
     }
 
     @Test
-    void findCustomerTest(){
-        List<Order> orderList=orderRepository.findByCustomer("user2").orElse(null);
-        assertThat(orderList==null).isTrue();
+    void findCustomerTest() {
+        List<Order> orderList = orderRepository.findByCustomer("user2").orElse(null);
+        assertThat(orderList == null).isTrue();
     }
 
 }

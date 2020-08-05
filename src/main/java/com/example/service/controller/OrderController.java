@@ -7,9 +7,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @Controller
 @RequestMapping("/service")
@@ -24,17 +27,22 @@ public class OrderController {
         this.convertService = convertService;
     }
 
-
-    @GetMapping("")
-    ResponseEntity<String> getObject(@RequestBody String json) throws JsonProcessingException {
-        Order order=convertService.JsonToOrder(json);
-        return new ResponseEntity<>(orderService.findOrderListByCustomer(order), HttpStatus.OK);
+    @RequestMapping(value = "",
+            method = RequestMethod.GET,
+            headers = "Accept=application/json")
+    @ResponseBody
+    public String getObject(@RequestBody String json) throws JsonProcessingException {
+        Order order = convertService.JsonToOrder(json);
+        return orderService.findOrderListByCustomer(order);
     }
 
-    @PutMapping("")
-    ResponseEntity<String>  putObject(@RequestBody String json) throws JsonProcessingException {
-        Order order= convertService.JsonToOrder(json);
-        return new ResponseEntity<>(orderService.save(order),HttpStatus.OK);
+    @RequestMapping(value = "",
+            method = RequestMethod.PUT,
+            headers = "Accept=application/json")
+    @ResponseBody
+    public String putObjectNew(@RequestBody String json) throws JsonProcessingException {
+        Order order = convertService.JsonToOrder(json);
+        return orderService.save(order);
     }
 
 }

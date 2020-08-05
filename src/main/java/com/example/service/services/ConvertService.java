@@ -1,13 +1,12 @@
 package com.example.service.services;
 
-import com.example.service.converter.DTOMapper;
-import com.example.service.converter.OrderMapper;
+import com.example.service.mapper.DTOMapper;
+import com.example.service.mapper.OrderMapper;
 import com.example.service.dto.OrderDTO;
 import com.example.service.entities.Order;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -19,20 +18,16 @@ public class ConvertService {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-//    @Autowired
-//    public ConvertService(DTOMapperSpring dtoMapperSpring) {
-//    }
-
     // JSON=>DTO=>Entity
     public Order JsonToOrder(String json) throws JsonProcessingException {
-        OrderDTO orderDTO=JsontoDTO(json);
+        OrderDTO orderDTO = JsontoDTO(json);
         return DTOMapper.INSTANCE.orderFromDTO(orderDTO);
     }
 
     //Entity=>ListDTO=>JSON
     public String OrderToJSON(Order order) throws JsonProcessingException {
         List<OrderDTO> orderDTOList = new ArrayList<>();
-        OrderDTO orderDTO=OrderMapper.INSTANCE.dtoFromOrder(order);
+        OrderDTO orderDTO = OrderMapper.INSTANCE.dtoFromOrder(order);
         orderDTOList.add(orderDTO);
         return DTOToJson(orderDTOList);
     }
